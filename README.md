@@ -2,23 +2,21 @@
 
 A professional, interactive deep learning visualization tool built entirely in vanilla JavaScript. Train neural networks in real-time and watch decision boundaries evolve across your screen.
 
-![Neural Network Playground](https://img.shields.io/badge/Made%20with-Vanilla%20JS-yellow?style=for-the-badge)
-
 ## Features
 
-### 🧠 Interactive Neural Network Builder
+### Interactive Neural Network Builder
 - **Dynamic Architecture Control**: Add/remove hidden layers (1-5 layers) on the fly
 - **Neuron Configuration**: Adjust neurons per layer (1-10) using intuitive sliders
 - **Activation Functions**: Choose ReLU, Sigmoid, or Tanh for each hidden layer
 - **Real-time Network Diagram**: SVG-rendered neural network with weight visualization
 
-### 📊 Real-time Visualizations
+### Real-time Visualizations
 - **Decision Boundary Visualization**: Watch the network learn by observing colored regions (red for class 0, cyan for class 1) evolve as training progresses
 - **Loss Curve**: Chart.js-powered training loss tracking over epochs
 - **Network Diagram**: Visual representation of network architecture with connection weights shown as line thickness and color
 - **Live Metrics**: Accuracy, loss, epoch count, and elapsed training time
 
-### 🎯 Multiple Datasets
+### Multiple Datasets
 - **XOR**: Classic non-linearly separable problem
 - **Circle**: Binary classification of inner vs outer circles
 - **Spiral**: Two-class spiral pattern (challenging for simple networks)
@@ -26,14 +24,14 @@ A professional, interactive deep learning visualization tool built entirely in v
 - **Two Moons**: Crescent-shaped non-linear boundaries
 - **Sine**: Sine wave classification pattern
 
-### ⚙️ Advanced Training Controls
+### Advanced Training Controls
 - **Learning Rate**: Fine-tune convergence speed (0.001 to 1.0)
 - **Batch Size**: Mini-batch gradient descent (1-128 samples)
 - **Epochs**: Set maximum training iterations (1-500)
 - **Regularization**: L1/L2 regularization to prevent overfitting (0-0.1)
 - **Train/Pause/Reset**: Full control over training state
 
-### 🎨 Professional Design
+### Professional Design
 - **Dark Theme**: Deep navy background (#0a192f) with cyan (#64ffda) accents
 - **Responsive Layout**: Adapts to different screen sizes
 - **Smooth Animations**: requestAnimationFrame for fluid visualization
@@ -228,4 +226,4 @@ Created as a comprehensive demonstration of:
 
 ---
 
-**Start training your first neural network today!** Open `index.html` in your browser and explore the fascinating world of deep learning.
+Open `index.html` in your browser to begin training neural networks interactively.
