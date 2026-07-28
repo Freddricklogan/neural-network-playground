@@ -3,7 +3,19 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Neural Network Playground</title>
+    <title>Neural Network Playground — Interactive Deep Learning Visualization</title>
+    <meta name="description" content="Build, train, and visualize neural networks entirely in the browser. A from-scratch deep learning engine with live decision boundaries, backpropagation, and real-time metrics — no frameworks.">
+    <meta name="author" content="Freddrick Logan">
+    <meta name="keywords" content="neural network, deep learning, machine learning, backpropagation, decision boundary, data visualization, education, vanilla JavaScript">
+    <meta name="theme-color" content="#0a192f">
+    <link rel="canonical" href="https://freddricklogan.github.io/neural-network-playground/">
+    <!-- Open Graph / social sharing -->
+    <meta property="og:type" content="website">
+    <meta property="og:title" content="Neural Network Playground — Interactive Deep Learning Visualization">
+    <meta property="og:description" content="A from-scratch neural network you can train in your browser and watch learn in real time. Built in vanilla JavaScript.">
+    <meta property="og:url" content="https://freddricklogan.github.io/neural-network-playground/">
+    <meta name="twitter:card" content="summary_large_image">
+    <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' rx='6' fill='%230a192f'/%3E%3Cg fill='none' stroke='%2364ffda' stroke-width='1.5'%3E%3Cline x1='8' y1='10' x2='16' y2='7'/%3E%3Cline x1='8' y1='10' x2='16' y2='16'/%3E%3Cline x1='8' y1='22' x2='16' y2='16'/%3E%3Cline x1='8' y1='22' x2='16' y2='25'/%3E%3Cline x1='16' y1='7' x2='24' y2='16'/%3E%3Cline x1='16' y1='16' x2='24' y2='16'/%3E%3Cline x1='16' y1='25' x2='24' y2='16'/%3E%3C/g%3E%3Cg fill='%2364ffda'%3E%3Ccircle cx='8' cy='10' r='2.5'/%3E%3Ccircle cx='8' cy='22' r='2.5'/%3E%3Ccircle cx='16' cy='7' r='2.5'/%3E%3Ccircle cx='16' cy='16' r='2.5'/%3E%3Ccircle cx='16' cy='25' r='2.5'/%3E%3Ccircle cx='24' cy='16' r='2.5'/%3E%3C/g%3E%3C/svg%3E">
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <style>
         * {
@@ -410,10 +422,20 @@
                     </select>
                 </div>
 
+                <div class="control-group">
+                    <label>Random Seed <span style="color:#6b7f9a;font-weight:400">(reproducible runs)</span></label>
+                    <input type="number" id="seed" value="42" min="0" step="1"
+                           style="width:100%;padding:10px;background:rgba(100,255,218,0.05);border:1px solid rgba(100,255,218,0.3);color:#e0e0e0;border-radius:5px;font-size:0.9em;">
+                </div>
+
                 <div class="button-group">
                     <button id="trainBtn">Train</button>
                     <button id="pauseBtn">Pause</button>
                     <button id="resetBtn" class="danger">Reset</button>
+                </div>
+
+                <div class="button-group">
+                    <button id="exportBtn" title="Download the trained model (architecture + weights) as JSON">Export Model</button>
                 </div>
 
                 <div class="training-status">
@@ -484,9 +506,38 @@
                 </div>
             </div>
         </div>
+
+        <footer style="text-align:center;margin-top:40px;padding:24px 20px;border-top:1px solid rgba(100,255,218,0.15);color:#8899aa;font-size:0.9em;">
+            <p style="margin-bottom:8px;">
+                <strong style="color:#64ffda;">Neural Network Playground</strong>
+                &mdash; a from-scratch deep learning engine in vanilla JavaScript (no ML frameworks).
+            </p>
+            <p>
+                Built by <a href="https://github.com/Freddricklogan" style="color:#64ffda;text-decoration:none;">Freddrick Logan</a>
+                &nbsp;&middot;&nbsp;
+                <a href="https://github.com/Freddricklogan/neural-network-playground" style="color:#64ffda;text-decoration:none;">Source on GitHub</a>
+                &nbsp;&middot;&nbsp;
+                <a href="https://www.linkedin.com/in/freddricklogan/" style="color:#64ffda;text-decoration:none;">LinkedIn</a>
+            </p>
+        </footer>
     </div>
 
     <script>
+        // ==================== Deterministic RNG (reproducible experiments) ====================
+        // A seeded pseudo-random generator (mulberry32) drives dataset generation, weight
+        // initialization, and mini-batch sampling, so a given seed reproduces an identical run.
+        function mulberry32(seed) {
+            let a = seed >>> 0;
+            return function () {
+                a |= 0; a = (a + 0x6D2B79F5) | 0;
+                let t = Math.imul(a ^ (a >>> 15), 1 | a);
+                t = (t + Math.imul(t ^ (t >>> 7), 61 | t)) ^ t;
+                return ((t ^ (t >>> 14)) >>> 0) / 4294967296;
+            };
+        }
+        let rng = mulberry32(42);
+        function reseed(seed) { rng = mulberry32(seed >>> 0); }
+
         // ==================== Neural Network Implementation ====================
 
         class Matrix {
@@ -499,7 +550,7 @@
             randomize() {
                 for (let i = 0; i < this.rows; i++) {
                     for (let j = 0; j < this.cols; j++) {
-                        this.data[i][j] = Math.random() * 2 - 1;
+                        this.data[i][j] = rng() * 2 - 1;
                     }
                 }
             }
@@ -783,15 +834,15 @@
                     const corner = corners[i % 4];
                     const noise = 0.1;
                     data.push([
-                        corner[0] + (Math.random() - 0.5) * noise,
-                        corner[1] + (Math.random() - 0.5) * noise
+                        corner[0] + (rng() - 0.5) * noise,
+                        corner[1] + (rng() - 0.5) * noise
                     ]);
                     labels.push(expectedLabels[i % 4]);
                 }
             } else if (type === 'circle') {
                 for (let i = 0; i < numPoints; i++) {
-                    const angle = Math.random() * 2 * Math.PI;
-                    const radius = Math.random();
+                    const angle = rng() * 2 * Math.PI;
+                    const radius = rng();
                     const x = 0.5 + radius * 0.4 * Math.cos(angle);
                     const y = 0.5 + radius * 0.4 * Math.sin(angle);
                     data.push([x, y]);
@@ -802,7 +853,7 @@
                     const label = i < numPoints / 2 ? 0 : 1;
                     const angle = (i / numPoints) * 4 * Math.PI;
                     const radius = (i / numPoints) * 0.4;
-                    const noise = (Math.random() - 0.5) * 0.05;
+                    const noise = (rng() - 0.5) * 0.05;
                     const x = 0.5 + (radius + noise) * Math.cos(angle);
                     const y = 0.5 + (radius + noise) * Math.sin(angle);
                     data.push([x, y]);
@@ -813,32 +864,32 @@
                     const label = i < numPoints / 2 ? 0 : 1;
                     const centerX = label === 0 ? 0.3 : 0.7;
                     const centerY = label === 0 ? 0.3 : 0.7;
-                    const x = centerX + (Math.random() - 0.5) * 0.3;
-                    const y = centerY + (Math.random() - 0.5) * 0.3;
+                    const x = centerX + (rng() - 0.5) * 0.3;
+                    const y = centerY + (rng() - 0.5) * 0.3;
                     data.push([x, y]);
                     labels.push(label);
                 }
             } else if (type === 'moons') {
                 for (let i = 0; i < numPoints; i++) {
                     const label = i < numPoints / 2 ? 0 : 1;
-                    const angle = Math.random() * Math.PI;
+                    const angle = rng() * Math.PI;
                     if (label === 0) {
                         const x = 0.2 + 0.3 * Math.cos(angle);
                         const y = 0.3 + 0.15 * Math.sin(angle);
-                        data.push([x + (Math.random() - 0.5) * 0.1, y + (Math.random() - 0.5) * 0.1]);
+                        data.push([x + (rng() - 0.5) * 0.1, y + (rng() - 0.5) * 0.1]);
                     } else {
                         const x = 0.7 - 0.3 * Math.cos(angle);
                         const y = 0.7 - 0.15 * Math.sin(angle);
-                        data.push([x + (Math.random() - 0.5) * 0.1, y + (Math.random() - 0.5) * 0.1]);
+                        data.push([x + (rng() - 0.5) * 0.1, y + (rng() - 0.5) * 0.1]);
                     }
                     labels.push(label);
                 }
             } else if (type === 'sine') {
                 for (let i = 0; i < numPoints; i++) {
-                    const x = Math.random();
+                    const x = rng();
                     const y = 0.5 + 0.2 * Math.sin(x * 4 * Math.PI);
-                    const label = Math.random() < 0.5 ? 0 : 1;
-                    data.push([x, y + (Math.random() - 0.5) * 0.15]);
+                    const label = rng() < 0.5 ? 0 : 1;
+                    data.push([x, y + (rng() - 0.5) * 0.15]);
                     labels.push(label);
                 }
             }
@@ -1057,7 +1108,8 @@
             batchSize: 32,
             epochs: 100,
             regularization: 0,
-            regType: 'none'
+            regType: 'none',
+            seed: 42
         };
 
         function initializeNetwork() {
@@ -1129,7 +1181,7 @@
             const batchSize = Math.min(config.batchSize, trainingData.data.length);
             const batchIndices = [];
             for (let i = 0; i < batchSize; i++) {
-                batchIndices.push(Math.floor(Math.random() * trainingData.data.length));
+                batchIndices.push(Math.floor(rng() * trainingData.data.length));
             }
 
             const batchInput = new Matrix(batchSize, 2);
@@ -1144,18 +1196,7 @@
             const output = network.forward(batchInput);
             network.backward(batchInput, output, batchY);
 
-            const fullOutput = network.predict(
-                new Matrix(1, 2).apply(() =>
-                    new Matrix(trainingData.data.length, 2).apply((i, j) => {
-                        const result = new Matrix(trainingData.data.length, 2);
-                        for (let k = 0; k < trainingData.data.length; k++) {
-                            result.data[k] = trainingData.data[k];
-                        }
-                        return result;
-                    })
-                )
-            );
-
+            // Evaluate loss/accuracy across the full dataset for stable metric reporting.
             const allInput = new Matrix(trainingData.data.length, 2);
             for (let i = 0; i < trainingData.data.length; i++) {
                 allInput.data[i] = trainingData.data[i];
@@ -1196,6 +1237,9 @@
             lossHistory = [];
             accuracyHistory = [];
 
+            // Reseed so the dataset, weight init, and sampling are fully reproducible for this seed.
+            reseed(config.seed);
+            trainingData = generateDataset(config.dataset);
             initializeNetwork();
             initializeLossChart();
             drawDecisionBoundary(network, trainingData.data, trainingData.labels);
@@ -1304,6 +1348,43 @@
             if (network) network.regType = config.regType;
         });
 
+        document.getElementById('seed').addEventListener('change', (e) => {
+            const value = parseInt(e.target.value);
+            config.seed = Number.isFinite(value) && value >= 0 ? value : 0;
+            e.target.value = config.seed;
+            if (!isTraining) reset();
+        });
+
+        document.getElementById('exportBtn').addEventListener('click', () => {
+            if (!network) return;
+            const model = {
+                exportedAt: new Date().toISOString(),
+                dataset: config.dataset,
+                seed: config.seed,
+                architecture: network.getArchitecture(),
+                hyperparameters: {
+                    learningRate: config.learningRate,
+                    batchSize: config.batchSize,
+                    epochs: config.epochs,
+                    regularization: config.regularization,
+                    regType: config.regType
+                },
+                activations: network.activationNames,
+                epochsTrained: currentEpoch,
+                weights: network.weights.map(w => w.data),
+                biases: network.biases.map(b => b.data)
+            };
+            const blob = new Blob([JSON.stringify(model, null, 2)], { type: 'application/json' });
+            const url = URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = `nn-model-${config.dataset}-seed${config.seed}.json`;
+            document.body.appendChild(a);
+            a.click();
+            document.body.removeChild(a);
+            URL.revokeObjectURL(url);
+        });
+
         document.querySelectorAll('.dataset-btn').forEach(btn => {
             btn.addEventListener('click', (e) => {
                 document.querySelectorAll('.dataset-btn').forEach(b => b.classList.remove('active'));
@@ -1315,6 +1396,7 @@
         });
 
         // Initialize
+        reseed(config.seed);
         trainingData = generateDataset(config.dataset);
         initializeLossChart();
         initializeNetwork();
