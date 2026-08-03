@@ -7,7 +7,7 @@
     <meta name="description" content="Build, train, and visualize neural networks entirely in the browser. A from-scratch deep learning engine with live decision boundaries, backpropagation, and real-time metrics — no frameworks.">
     <meta name="author" content="Freddrick Logan">
     <meta name="keywords" content="neural network, deep learning, machine learning, backpropagation, decision boundary, data visualization, education, vanilla JavaScript">
-    <meta name="theme-color" content="#0a192f">
+    <meta name="theme-color" content="#0a0e0a">
     <link rel="canonical" href="https://freddricklogan.github.io/neural-network-playground/">
     <!-- Open Graph / social sharing -->
     <meta property="og:type" content="website">
@@ -26,7 +26,7 @@
 
         body {
             font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-            background: linear-gradient(135deg, #0a192f 0%, #0f2847 100%);
+            background: linear-gradient(135deg, #0a0e0a 0%, #10160f 100%);
             color: #e0e0e0;
             min-height: 100vh;
             padding: 20px;
@@ -43,10 +43,10 @@
         }
 
         h1 {
-            color: #64ffda;
+            color: #33ff66;
             font-size: 2.5em;
             margin-bottom: 10px;
-            text-shadow: 0 0 20px rgba(100, 255, 218, 0.5);
+            text-shadow: 0 0 20px rgba(51, 255, 102, 0.5);
         }
 
         .subtitle {
@@ -62,18 +62,18 @@
         }
 
         .panel {
-            background: rgba(15, 40, 71, 0.8);
-            border: 1px solid rgba(100, 255, 218, 0.2);
+            background: rgba(16, 22, 15, 0.8);
+            border: 1px solid rgba(51, 255, 102, 0.2);
             border-radius: 10px;
             padding: 20px;
             backdrop-filter: blur(10px);
         }
 
         .panel h2 {
-            color: #64ffda;
+            color: #33ff66;
             font-size: 1.2em;
             margin-bottom: 15px;
-            border-bottom: 2px solid #64ffda;
+            border-bottom: 2px solid #33ff66;
             padding-bottom: 10px;
         }
 
@@ -93,10 +93,10 @@
             width: 100%;
             height: 6px;
             border-radius: 3px;
-            background: rgba(100, 255, 218, 0.1);
+            background: rgba(51, 255, 102, 0.1);
             outline: none;
             -webkit-appearance: none;
-            accent-color: #64ffda;
+            accent-color: #33ff66;
         }
 
         input[type="range"]::-webkit-slider-thumb {
@@ -105,25 +105,25 @@
             width: 16px;
             height: 16px;
             border-radius: 50%;
-            background: #64ffda;
+            background: #33ff66;
             cursor: pointer;
-            box-shadow: 0 0 10px rgba(100, 255, 218, 0.5);
+            box-shadow: 0 0 10px rgba(51, 255, 102, 0.5);
         }
 
         input[type="range"]::-moz-range-thumb {
             width: 16px;
             height: 16px;
             border-radius: 50%;
-            background: #64ffda;
+            background: #33ff66;
             cursor: pointer;
-            box-shadow: 0 0 10px rgba(100, 255, 218, 0.5);
+            box-shadow: 0 0 10px rgba(51, 255, 102, 0.5);
             border: none;
         }
 
         .slider-value {
             display: inline-block;
-            background: rgba(100, 255, 218, 0.1);
-            color: #64ffda;
+            background: rgba(51, 255, 102, 0.1);
+            color: #33ff66;
             padding: 4px 8px;
             border-radius: 4px;
             font-size: 0.85em;
@@ -133,8 +133,8 @@
         select {
             width: 100%;
             padding: 10px;
-            background: rgba(100, 255, 218, 0.05);
-            border: 1px solid rgba(100, 255, 218, 0.3);
+            background: rgba(51, 255, 102, 0.05);
+            border: 1px solid rgba(51, 255, 102, 0.3);
             color: #e0e0e0;
             border-radius: 5px;
             cursor: pointer;
@@ -142,7 +142,7 @@
         }
 
         select option {
-            background: #0a192f;
+            background: #0a0e0a;
             color: #e0e0e0;
         }
 
@@ -155,10 +155,10 @@
         button {
             flex: 1;
             padding: 12px;
-            border: 2px solid #64ffda;
+            border: 2px solid #33ff66;
             border-radius: 5px;
-            background: rgba(100, 255, 218, 0.1);
-            color: #64ffda;
+            background: rgba(51, 255, 102, 0.1);
+            color: #33ff66;
             cursor: pointer;
             font-weight: 600;
             transition: all 0.3s ease;
@@ -166,26 +166,26 @@
         }
 
         button:hover {
-            background: rgba(100, 255, 218, 0.2);
-            box-shadow: 0 0 15px rgba(100, 255, 218, 0.4);
+            background: rgba(51, 255, 102, 0.2);
+            box-shadow: 0 0 15px rgba(51, 255, 102, 0.4);
             transform: translateY(-2px);
         }
 
         button.active {
-            background: #64ffda;
-            color: #0a192f;
-            box-shadow: 0 0 20px rgba(100, 255, 218, 0.6);
+            background: #33ff66;
+            color: #0a0e0a;
+            box-shadow: 0 0 20px rgba(51, 255, 102, 0.6);
         }
 
         button.danger {
-            border-color: #ff6b6b;
-            color: #ff6b6b;
-            background: rgba(255, 107, 107, 0.1);
+            border-color: #d9a441;
+            color: #d9a441;
+            background: rgba(217, 164, 65, 0.1);
         }
 
         button.danger:hover {
-            background: rgba(255, 107, 107, 0.2);
-            box-shadow: 0 0 15px rgba(255, 107, 107, 0.4);
+            background: rgba(217, 164, 65, 0.2);
+            box-shadow: 0 0 15px rgba(217, 164, 65, 0.4);
         }
 
         .center-panel {
@@ -196,8 +196,8 @@
         }
 
         .visualization-container {
-            background: rgba(15, 40, 71, 0.8);
-            border: 1px solid rgba(100, 255, 218, 0.2);
+            background: rgba(16, 22, 15, 0.8);
+            border: 1px solid rgba(51, 255, 102, 0.2);
             border-radius: 10px;
             padding: 20px;
             flex: 1;
@@ -207,7 +207,7 @@
             width: 100%;
             height: 400px;
             border-radius: 5px;
-            background: rgba(10, 25, 47, 0.5);
+            background: rgba(10, 14, 10, 0.5);
         }
 
         #decisionBoundary {
@@ -228,8 +228,8 @@
         }
 
         .metric {
-            background: rgba(100, 255, 218, 0.05);
-            border: 1px solid rgba(100, 255, 218, 0.2);
+            background: rgba(51, 255, 102, 0.05);
+            border: 1px solid rgba(51, 255, 102, 0.2);
             border-radius: 5px;
             padding: 15px;
             text-align: center;
@@ -237,7 +237,7 @@
 
         .metric-value {
             font-size: 1.5em;
-            color: #64ffda;
+            color: #33ff66;
             font-weight: bold;
             margin-bottom: 5px;
         }
@@ -257,7 +257,7 @@
             width: 100%;
             height: 500px;
             border-radius: 5px;
-            background: rgba(10, 25, 47, 0.5);
+            background: rgba(10, 14, 10, 0.5);
         }
 
         .layer-controls {
@@ -266,14 +266,14 @@
         }
 
         .layer-item {
-            background: rgba(100, 255, 218, 0.05);
-            border: 1px solid rgba(100, 255, 218, 0.2);
+            background: rgba(51, 255, 102, 0.05);
+            border: 1px solid rgba(51, 255, 102, 0.2);
             border-radius: 5px;
             padding: 12px;
         }
 
         .layer-header {
-            color: #64ffda;
+            color: #33ff66;
             font-weight: 600;
             margin-bottom: 8px;
             font-size: 0.9em;
@@ -294,9 +294,9 @@
         button.remove-layer {
             padding: 6px 10px;
             font-size: 0.8em;
-            border-color: #ff6b6b;
-            color: #ff6b6b;
-            background: rgba(255, 107, 107, 0.1);
+            border-color: #d9a441;
+            color: #d9a441;
+            background: rgba(217, 164, 65, 0.1);
         }
 
         .neurons-display {
@@ -306,8 +306,8 @@
         }
 
         .training-status {
-            background: rgba(100, 255, 218, 0.05);
-            border: 1px solid rgba(100, 255, 218, 0.2);
+            background: rgba(51, 255, 102, 0.05);
+            border: 1px solid rgba(51, 255, 102, 0.2);
             border-radius: 5px;
             padding: 12px;
             text-align: center;
@@ -329,7 +329,7 @@
         }
 
         .status-indicator.training {
-            background: #64ffda;
+            background: #33ff66;
         }
 
         @keyframes pulse {
@@ -423,9 +423,9 @@
                 </div>
 
                 <div class="control-group">
-                    <label>Random Seed <span style="color:#6b7f9a;font-weight:400">(reproducible runs)</span></label>
+                    <label>Random Seed <span style="color:#7a7a7a;font-weight:400">(reproducible runs)</span></label>
                     <input type="number" id="seed" value="42" min="0" step="1"
-                           style="width:100%;padding:10px;background:rgba(100,255,218,0.05);border:1px solid rgba(100,255,218,0.3);color:#e0e0e0;border-radius:5px;font-size:0.9em;">
+                           style="width:100%;padding:10px;background:rgba(51,255,102,0.05);border:1px solid rgba(51,255,102,0.3);color:#e0e0e0;border-radius:5px;font-size:0.9em;">
                 </div>
 
                 <div class="button-group">
@@ -507,17 +507,17 @@
             </div>
         </div>
 
-        <footer style="text-align:center;margin-top:40px;padding:24px 20px;border-top:1px solid rgba(100,255,218,0.15);color:#8899aa;font-size:0.9em;">
+        <footer style="text-align:center;margin-top:40px;padding:24px 20px;border-top:1px solid rgba(51,255,102,0.15);color:#9a9a9a;font-size:0.9em;">
             <p style="margin-bottom:8px;">
-                <strong style="color:#64ffda;">Neural Network Playground</strong>
+                <strong style="color:#33ff66;">Neural Network Playground</strong>
                 &mdash; a from-scratch deep learning engine in vanilla JavaScript (no ML frameworks).
             </p>
             <p>
-                Built by <a href="https://github.com/Freddricklogan" style="color:#64ffda;text-decoration:none;">Freddrick Logan</a>
+                Built by <a href="https://github.com/Freddricklogan" style="color:#33ff66;text-decoration:none;">Freddrick Logan</a>
                 &nbsp;&middot;&nbsp;
-                <a href="https://github.com/Freddricklogan/neural-network-playground" style="color:#64ffda;text-decoration:none;">Source on GitHub</a>
+                <a href="https://github.com/Freddricklogan/neural-network-playground" style="color:#33ff66;text-decoration:none;">Source on GitHub</a>
                 &nbsp;&middot;&nbsp;
-                <a href="https://www.linkedin.com/in/freddricklogan/" style="color:#64ffda;text-decoration:none;">LinkedIn</a>
+                <a href="https://www.linkedin.com/in/freddricklogan/" style="color:#33ff66;text-decoration:none;">LinkedIn</a>
             </p>
         </footer>
     </div>
@@ -911,8 +911,8 @@
                     datasets: [{
                         label: 'Training Loss',
                         data: [],
-                        borderColor: '#64ffda',
-                        backgroundColor: 'rgba(100, 255, 218, 0.05)',
+                        borderColor: '#33ff66',
+                        backgroundColor: 'rgba(51, 255, 102, 0.05)',
                         borderWidth: 2,
                         tension: 0.4,
                         fill: true,
@@ -930,11 +930,11 @@
                         y: {
                             beginAtZero: true,
                             max: 2,
-                            grid: { color: 'rgba(100, 255, 218, 0.1)' },
+                            grid: { color: 'rgba(51, 255, 102, 0.1)' },
                             ticks: { color: '#a0a0a0' }
                         },
                         x: {
-                            grid: { color: 'rgba(100, 255, 218, 0.1)' },
+                            grid: { color: 'rgba(51, 255, 102, 0.1)' },
                             ticks: { color: '#a0a0a0' }
                         }
                     }
@@ -992,7 +992,7 @@
                 const x = data[i][0] * width;
                 const y = data[i][1] * height;
 
-                ctx.fillStyle = labels[i] === 0 ? '#ff6b6b' : '#64ffda';
+                ctx.fillStyle = labels[i] === 0 ? '#d9a441' : '#33ff66';
                 ctx.beginPath();
                 ctx.arc(x, y, 4, 0, 2 * Math.PI);
                 ctx.fill();
@@ -1012,7 +1012,7 @@
             canvas.width = width;
             canvas.height = height;
 
-            ctx.fillStyle = 'rgba(10, 25, 47, 0.5)';
+            ctx.fillStyle = 'rgba(10, 14, 10, 0.5)';
             ctx.fillRect(0, 0, width, height);
 
             const architecture = network.getArchitecture();
@@ -1050,7 +1050,7 @@
 
                         const w = weight.data[i][j];
                         const intensity = Math.abs(w) / maxWeight;
-                        const color = w > 0 ? `rgba(100, 255, 218, ${intensity * 0.4})` : `rgba(255, 107, 107, ${intensity * 0.4})`;
+                        const color = w > 0 ? `rgba(51, 255, 102, ${intensity * 0.4})` : `rgba(217, 164, 65, ${intensity * 0.4})`;
 
                         ctx.strokeStyle = color;
                         ctx.lineWidth = 1 + intensity * 3;
@@ -1071,16 +1071,16 @@
                     const { x, y } = nodePositions[layer][i];
 
                     if (isInput || isOutput) {
-                        ctx.fillStyle = '#64ffda';
+                        ctx.fillStyle = '#33ff66';
                     } else {
-                        ctx.fillStyle = '#64ffda';
+                        ctx.fillStyle = '#33ff66';
                     }
 
                     ctx.beginPath();
                     ctx.arc(x, y, 6, 0, 2 * Math.PI);
                     ctx.fill();
 
-                    ctx.strokeStyle = '#64ffda';
+                    ctx.strokeStyle = '#33ff66';
                     ctx.lineWidth = 2;
                     ctx.stroke();
                 }
