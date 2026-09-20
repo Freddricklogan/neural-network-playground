@@ -1,134 +1,197 @@
-<h1 align="center">Neural Network Playground</h1>
+# Neural Network Playground: watch a network learn, one gradient step at a time
 
-<p align="center">
-  <em>Build, train, and watch a neural network learn — in real time, in your browser, with zero frameworks.</em>
-</p>
+[![CI/CD](https://github.com/Freddricklogan/neural-network-playground/actions/workflows/deploy.yml/badge.svg)](https://github.com/Freddricklogan/neural-network-playground/actions/workflows/deploy.yml)
+[![Coverage](https://img.shields.io/badge/coverage-100%25-brightgreen)](#5-getting-started--verification)
+[![Security (CodeQL)](https://github.com/Freddricklogan/neural-network-playground/actions/workflows/codeql.yml/badge.svg)](https://github.com/Freddricklogan/neural-network-playground/actions/workflows/codeql.yml)
+[![License MIT](https://img.shields.io/badge/license-MIT-blue)](LICENSE)
+[![Live Demo](https://img.shields.io/badge/live%20demo-online-brightgreen)](https://freddricklogan.github.io/neural-network-playground/)
 
-<p align="center">
-  <a href="https://freddricklogan.github.io/neural-network-playground/"><img src="https://img.shields.io/badge/Live_Demo-Open_App-64ffda?style=for-the-badge&logo=github" alt="Live Demo"></a>
-</p>
+## 1. Executive Summary & Business Impact
 
-<p align="center">
-  <img src="https://img.shields.io/badge/JavaScript-Vanilla_ES6-f7df1e?logo=javascript&logoColor=black" alt="JavaScript">
-  <img src="https://img.shields.io/badge/Dependencies-1_(Chart.js)-success" alt="Dependencies">
-  <img src="https://img.shields.io/badge/Backend-None-blue" alt="No backend">
-  <img src="https://img.shields.io/badge/License-MIT-lightgrey" alt="License">
-</p>
+**Problem statement.** Backpropagation is taught as an equation and experienced
+as a black box. Learners adjust a learning rate, see a number move, and take on
+faith that the two are connected. Framework tutorials make this worse: `model.fit()`
+hides every mechanism the lesson is about.
 
----
+**Solution & value delivered.** A neural network written from scratch — matrices,
+activations, softmax cross-entropy, L1/L2 regularisation, mini-batch gradient
+descent — with no ML framework, running entirely in the browser. Every
+hyperparameter is a live control, and the decision boundary redraws as the
+network trains, so cause and effect are visible in the same frame. Runs are
+seeded, so an instructor can hand out a seed and every student reproduces the
+identical run.
 
-## Overview
+It is a **teaching instrument**, not a training platform: the datasets are
+synthetic and the scale is deliberately small enough to watch.
 
-**Neural Network Playground** is an interactive deep-learning tool that implements a feed-forward
-neural network — including forward propagation, backpropagation, and gradient descent — **from
-first principles in plain JavaScript**. There is no TensorFlow, no PyTorch, and no server: the
-matrix math, the optimizer, and the visualizations all run client-side in a single self-contained
-page.
+## 2. Demonstrated Competencies & Technical Skills
 
-Users configure an architecture, pick a dataset, press **Train**, and watch the decision boundary
-reshape itself epoch by epoch as the loss curve descends. It is equal parts teaching tool and
-engineering demonstration — the kind of artifact that shows you understand *how* a neural network
-learns, not just how to call `model.fit()`.
+- **Systems Architecture & CS** — A layered design in which pure computation
+  (`src/{rng,matrix,activation,network,dataset,metrics}.js`) never touches the
+  DOM, and the DOM layer (`src/{main,charts}.js`) never computes. That boundary
+  is what makes 100% statement coverage of the engine reachable at all.
+- **Data Science & AI** — Feed-forward network with configurable depth and
+  width; ReLU / tanh / sigmoid / linear activations; numerically stable softmax;
+  categorical cross-entropy; L1 and L2 penalties; seeded Fisher–Yates mini-batch
+  sampling. Six synthetic datasets spanning linear, radial and interleaved
+  non-linear boundaries.
+- **Cybersecurity & Compliance** — Strict `default-src 'none'` CSP; the one CDN
+  dependency pinned to an exact version with an SRI hash computed against the
+  artifact, plus a vendored offline fallback; no inline script, style or event
+  handlers; CodeQL and Trivy in CI.
+- **EdTech & Human-Centered Design** — Reproducible seeds for classroom parity,
+  a five-step guided tour that performs real actions, `aria-live` on every
+  changing metric, full keyboard reachability, and `prefers-reduced-motion`
+  respected.
 
-> **▶ [Launch the live demo](https://freddricklogan.github.io/neural-network-playground/)**
+## 3. System Architecture & Data Flow
 
----
+```mermaid
+flowchart LR
+  subgraph TB1["Trust Boundary: the visitor's browser"]
+    UI["Controls<br/>dataset · lr · batch · epochs · reg · seed"]:::client
+    MAIN["src/main.js<br/>DOM binding + training loop"]:::client
+    CANVAS["Canvas renderers<br/>boundary · diagram · loss chart"]:::client
 
-## Why this project
+    subgraph CORE["Pure engine — no DOM, fully unit-tested"]
+      RNG["rng.js<br/>seeded mulberry32"]:::service
+      DS["dataset.js<br/>6 generators + one-hot"]:::service
+      MAT["matrix.js<br/>dense linear algebra"]:::service
+      NET["network.js<br/>forward · backward"]:::service
+      MET["metrics.js<br/>loss · accuracy · batching"]:::service
+    end
 
-Most portfolio ML projects import a library and fit a model in ten lines. This one rebuilds the
-core machinery to demonstrate genuine depth:
+    STATE[("in-memory state<br/>weights · biases · history")]:::data
+  end
 
-| Skill demonstrated | Where it shows up |
-|:--|:--|
-| **Deep-learning fundamentals** | Hand-implemented backpropagation, softmax + cross-entropy, L1/L2 regularization |
-| **Numerical / linear algebra** | A custom `Matrix` class (multiply, transpose, elementwise ops) powering every layer |
-| **Real-time systems & rendering** | `requestAnimationFrame` training loop, Canvas decision-boundary rasterization, live network diagram |
-| **Reproducible experimentation** | Seeded PRNG (mulberry32) so any run can be replayed exactly — an ML-engineering best practice |
-| **Product & UX sense** | Clean, responsive, dark-themed control surface with immediate visual feedback |
-| **Zero-dependency engineering** | Ships as one HTML file; the only external asset is Chart.js for the loss plot |
+  subgraph TB2["Trust Boundary: public CDN"]
+    CDN["cdn.jsdelivr.net<br/>chart.js@4.4.6"]:::security
+    VEND["vendor/chart.umd.min.js<br/>offline fallback"]:::security
+  end
 
----
+  UI -->|"validated, clamped inputs"| MAIN
+  MAIN --> RNG
+  RNG -->|"injected generator"| DS
+  RNG -->|"injected generator"| NET
+  DS --> MAT
+  MAT --> NET
+  NET --> MET
+  NET --> STATE
+  MET --> MAIN
+  MAIN --> CANVAS
+  CDN -.->|"SRI sha384 + crossorigin<br/>CSP script-src allow-list"| CANVAS
+  VEND -.->|"used when CDN is blocked"| CANVAS
 
-## Features
+  classDef client fill:#1f2a44,stroke:#58A6FF,color:#e6edf3
+  classDef service fill:#14213d,stroke:#3fb950,color:#e6edf3
+  classDef data fill:#2b1d3a,stroke:#d2a8ff,color:#e6edf3
+  classDef security fill:#3a1f1f,stroke:#f85149,color:#e6edf3
+```
 
-- **Interactive architecture builder** — add or remove up to 5 hidden layers and tune 1–10 neurons
-  per layer on the fly, with a live network diagram whose edge thickness and color encode learned
-  weights.
-- **Six built-in datasets** — XOR, Circle, Spiral, Gaussian, Two Moons, and Sine, spanning linearly
-  and non-linearly separable problems.
-- **Per-layer activation functions** — ReLU, Sigmoid, or Tanh, with a softmax output layer.
-- **Full training controls** — learning rate, batch size, epochs, and L1/L2 regularization strength.
-- **Reproducible runs** — set a random **seed** and every dataset, weight initialization, and
-  mini-batch draw becomes deterministic.
-- **Live metrics** — accuracy, cross-entropy loss, epoch counter, and elapsed time, alongside a
-  real-time loss curve.
-- **Export the trained model** — download the architecture, hyperparameters, and learned weights as
-  a portable JSON file.
-- **Train / Pause / Reset** — full control over the training lifecycle.
+No network calls leave the page. There is no backend, no account and no telemetry.
 
----
+## 4. Technical Highlights & Engineering Decisions
 
-## How it works
+### ADR-1 — Broadcasting in `Matrix.add`, because the demo did not run without it
 
-The network is a standard multilayer perceptron trained with mini-batch stochastic gradient descent.
+**Context.** `forward()` adds a `1 x n` bias to an `m x n` activation matrix.
+The original `Matrix.add` demanded an exact shape match and threw
+`Incompatible dimensions` otherwise. The UI ships a default batch size of 32.
+Every click of **Train** therefore threw before a single gradient step — the
+published demo was non-functional for any batch size except 1.
 
-1. **Forward pass** — each layer computes `z = xW + b`, then applies its activation. The output
-   layer applies softmax to produce class probabilities.
-2. **Loss** — categorical cross-entropy measures the gap between predicted probabilities and
-   one-hot labels.
-3. **Backward pass** — gradients are propagated from the output layer back through each hidden layer
-   using the chain rule and the activation derivatives, with optional L1/L2 penalties on the weights.
-4. **Update** — weights and biases are adjusted by the averaged gradient scaled by the learning rate.
-5. **Visualize** — after each epoch the app re-rasterizes the decision boundary over a pixel grid and
-   appends the new loss to the chart.
+**Decision.** `add` broadcasts a single-row operand across every row, and still
+rejects genuinely mismatched shapes. Broadcasting is what a bias add *means*;
+the exact-match rule was never the right constraint.
 
-All of this lives in [`index.html`](index.html) — the model, the datasets, and the rendering.
+**Consequence.** Training works at any batch size. Two regression tests pin both
+halves — the broadcast and the still-rejected mismatch — and every training test
+now uses multi-row batches, so the bug cannot return silently. See `AUDIT.md` §A1.
 
----
+### ADR-2 — Injected randomness instead of a module-level generator
 
-## Tech stack
+**Context.** A single mutable `let rng` was shared implicitly by dataset
+generation, weight initialisation and batch sampling. Nothing could be tested in
+isolation, and the "reproducible runs" the seed control promises could be broken
+by any consumer pulling an extra number from the stream.
 
-- **Language:** Vanilla JavaScript (ES6+)
-- **Rendering:** HTML5 Canvas (decision boundary + network diagram)
-- **Charting:** Chart.js (loss curve)
-- **Styling:** Hand-written CSS with a responsive grid layout
-- **Runtime:** 100% client-side — no build step, no backend, no install
+**Decision.** The generator is a value, created from a seed and passed in.
+`Matrix.randomize(rng)` throws a `TypeError` if it is omitted.
 
----
+**Consequence.** Every engine module is independently testable, and seeded
+reproducibility is enforced by tests rather than hoped for. The cost is a
+slightly wider signature on four functions — a good trade.
 
-## Run locally
+### ADR-3 — Pin the CDN and vendor a fallback, rather than trust "latest"
 
-No build tooling required. Clone and open the file, or serve it statically:
+**Context.** The page loaded `https://cdn.jsdelivr.net/npm/chart.js` with no
+version, no `integrity` and no `crossorigin` — executing whatever bytes the CDN
+served at load time. It also called `new Chart(...)` unconditionally, so a
+blocked CDN threw and aborted rendering.
+
+**Decision.** Pin `chart.js@4.4.6`, compute the SRI hash from the downloaded
+artifact, vendor a byte-identical copy, and have `loadChartLib()` fall back to it
+— then degrade to a visible notice if both fail.
+
+**Consequence.** A strict CSP became possible, the supply-chain risk is bounded
+by a hash, and the demo still works offline and on locked-down networks. The
+vendored copy adds ~200 KB to the repository, which is the price of the guarantee.
+
+## 5. Getting Started & Verification
+
+**Prerequisites.** Node 22 LTS (or any Node ≥ 20). No build step — the page runs
+directly from source.
 
 ```bash
 git clone https://github.com/Freddricklogan/neural-network-playground.git
 cd neural-network-playground
-
-# Option A: just open it
-open index.html            # macOS  (use "start" on Windows / "xdg-open" on Linux)
-
-# Option B: serve it (recommended)
-python3 -m http.server 8000
-# then visit http://localhost:8000
+npm install
+npm run serve          # then open the printed URL
 ```
 
----
+**Verification — these are the numbers this repository actually produced:**
 
-## Roadmap
+```bash
+npm test        # Test Files 6 passed (6) · Tests 81 passed (81)
+npm run coverage # All files 100% statements
+npm run lint     # eslint . — clean
+npm run validate # html-validate index.html — clean
+```
 
-- [ ] Import a previously exported model to resume or inspect it
-- [ ] Additional optimizers (Momentum, Adam)
-- [ ] Confusion matrix and per-class metrics
-- [ ] Adjustable train/test split with held-out evaluation
+| Check | Result |
+| --- | --- |
+| Unit tests | **81 passed / 81** across 6 files |
+| Statement coverage (engine) | **100%** |
+| ESLint | clean |
+| html-validate | clean |
+| Headless Chrome smoke | **0 console errors**; tour opens; training reached epoch 56 at 99.67% accuracy on the default seed |
 
----
+Coverage is measured over the pure engine. `src/main.js`, `src/charts.js` and
+`src/exec-shell.js` are DOM-binding layers excluded from the coverage target and
+covered by the browser smoke test instead.
 
-## Author
+## 6. Live Demo & Production Showcase
 
-**Freddrick Logan** — Educational Technologist & Technology Leader
-[GitHub](https://github.com/Freddricklogan) · [LinkedIn](https://www.linkedin.com/in/freddricklogan/)
+**<https://freddricklogan.github.io/neural-network-playground/>**
 
-## License
+No account, no credentials, no backend — everything runs in your browser.
 
-Released under the [MIT License](LICENSE).
+**30-second guided walkthrough.** Press **Take the 30-second tour** in the
+header; each of the five steps performs the action it describes.
+
+1. **Pick a problem** — loads the *Moons* dataset, one of the two genuinely
+   non-linear boundaries.
+2. **Shape the network** — widens the hidden layer to 12 neurons and rebuilds.
+3. **Train it** — starts mini-batch gradient descent; the boundary bends as loss falls.
+4. **Read the boundary** — shading is the network's confidence across the input
+   space; dots are the training points.
+5. **Take it with you** — exports architecture, weights and hyperparameters as
+   JSON. The run is seeded, so it reproduces exactly.
+
+Prefer to drive it yourself: set **Seed** to any integer and two runs with
+identical settings produce identical results — useful for handing a class a
+single reproducible experiment.
+
+> **Deployment note.** Pages serves `index.html` from the repository root via
+> `.github/workflows/deploy.yml`. **Settings → Pages → Source must be set to
+> "GitHub Actions"** for the workflow to publish.
