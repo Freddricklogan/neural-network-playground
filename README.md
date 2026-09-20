@@ -24,6 +24,8 @@ identical run.
 It is a **teaching instrument**, not a training platform: the datasets are
 synthetic and the scale is deliberately small enough to watch.
 
+**[→ Read the full case study](docs/CASE_STUDY.md)**
+
 ## 2. Demonstrated Competencies & Technical Skills
 
 - **Systems Architecture & CS** — A layered design in which pure computation
