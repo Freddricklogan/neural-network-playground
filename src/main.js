@@ -201,6 +201,7 @@ function resetAll() {
 /* ------------------------------------------------------------------ shell */
 
 const shell = mountExecShell({
+  theme: 'signal',
   title: 'Neural Network Playground',
   tagline:
     'Train a from-scratch neural network on synthetic 2-D datasets — matrices, backpropagation and regularisation, entirely in your browser.',
