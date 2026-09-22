@@ -1,9 +1,10 @@
+import { tokens } from './exec-shell.js';
 /**
  * Canvas rendering. Everything here touches the DOM and nothing here computes
  * anything the pure layer already knows how to compute.
  */
 
-const CLASS_COLOURS = ['#58A6FF', '#f85149'];
+const CLASS_COLOURS = [tokens().accent, tokens().danger];
 
 /**
  * Chart.js is loaded from a CDN with SRI. If it is blocked — offline, a locked
@@ -34,8 +35,8 @@ export function createLossChart(canvas, ChartLib) {
     data: {
       labels: [],
       datasets: [
-        { label: 'Loss', data: [], borderColor: '#f85149', backgroundColor: 'rgba(248,81,73,.12)', tension: 0.25, pointRadius: 0, yAxisID: 'y' },
-        { label: 'Accuracy', data: [], borderColor: '#3fb950', backgroundColor: 'rgba(63,185,80,.12)', tension: 0.25, pointRadius: 0, yAxisID: 'y1' }
+        { label: 'Loss', data: [], borderColor: tokens().danger, backgroundColor: 'rgba(248,81,73,.12)', tension: 0.25, pointRadius: 0, yAxisID: 'y' },
+        { label: 'Accuracy', data: [], borderColor: tokens().ok, backgroundColor: 'rgba(63,185,80,.12)', tension: 0.25, pointRadius: 0, yAxisID: 'y1' }
       ]
     },
     options: {
@@ -44,11 +45,11 @@ export function createLossChart(canvas, ChartLib) {
       animation: false,
       interaction: { mode: 'index', intersect: false },
       scales: {
-        x: { ticks: { color: '#8b98b0' }, grid: { color: 'rgba(34,48,77,.6)' } },
-        y: { position: 'left', ticks: { color: '#8b98b0' }, grid: { color: 'rgba(34,48,77,.6)' }, title: { display: true, text: 'Loss', color: '#8b98b0' } },
-        y1: { position: 'right', min: 0, max: 1, ticks: { color: '#8b98b0' }, grid: { drawOnChartArea: false }, title: { display: true, text: 'Accuracy', color: '#8b98b0' } }
+        x: { ticks: { color: tokens().muted }, grid: { color: 'rgba(34,48,77,.6)' } },
+        y: { position: 'left', ticks: { color: tokens().muted }, grid: { color: 'rgba(34,48,77,.6)' }, title: { display: true, text: 'Loss', color: tokens().muted } },
+        y1: { position: 'right', min: 0, max: 1, ticks: { color: tokens().muted }, grid: { drawOnChartArea: false }, title: { display: true, text: 'Accuracy', color: tokens().muted } }
       },
-      plugins: { legend: { labels: { color: '#e6edf3' } } }
+      plugins: { legend: { labels: { color: tokens().text } } }
     }
   });
 
@@ -145,7 +146,7 @@ export function drawNetworkDiagram(canvas, architecture) {
   }
 
   positions.forEach((layer, li) => {
-    const colour = li === 0 ? '#3fb950' : li === positions.length - 1 ? '#d2a8ff' : '#58A6FF';
+    const colour = li === 0 ? tokens().ok : li === positions.length - 1 ? tokens().series[4] : tokens().accent;
     for (const node of layer) {
       ctx.beginPath();
       ctx.arc(node.x, node.y, 6, 0, Math.PI * 2);

@@ -92,7 +92,7 @@
   color: var(--text);
 }
 
-.btn--primary { background: var(--accent); border-color: var(--accent); color: #07101f; font-weight: 600; }
+.btn--primary { background: var(--accent); border-color: var(--accent); color: var(--on-accent); font-weight: 600; }
 .btn--primary:hover { background: color-mix(in srgb, var(--accent) 85%, #fff); }
 .btn--danger { border-color: var(--danger); color: var(--danger); }
 .btn--danger:hover { background: color-mix(in srgb, var(--danger) 18%, var(--panel-2)); }
