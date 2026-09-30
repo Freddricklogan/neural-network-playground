@@ -32,7 +32,7 @@ Worth knowing: rebuilding this exposed that the published demo did not run at al
 
 ## 6. Evidence
 
-Measured in continuous integration on the current main branch: 81 unit tests passing across six files, 100% statement coverage over the engine, lint and HTML validation clean, CodeQL and dependency scanning enabled. The tests assert that loss falls on a linearly separable problem, that XOR is learned above chance, that L1 and L2 shrink weights relative to no regularisation, that the penalty scales with the learning rate, and that a given seed reproduces an identical network. Headless-browser smoke test: zero console errors; on the default seed, training reached epoch 56 at 99.67% accuracy. Security posture: Content Security Policy with `default-src 'none'`, the one CDN library pinned with a Subresource Integrity hash and vendored as a fallback.
+Measured in continuous integration on the current main branch: 93 unit tests passing across eight files, 100% statement coverage over the engine, lint and HTML validation clean, CodeQL and dependency scanning enabled. The tests assert that loss falls on a linearly separable problem, that XOR is learned above chance, that L1 and L2 shrink weights relative to no regularisation, that the penalty scales with the learning rate, and that a given seed reproduces an identical network. Headless-browser smoke test: zero console errors; on the default seed, training reached epoch 56 at 99.67% accuracy. Security posture: Content Security Policy with `default-src 'none'`, the one CDN library pinned with a Subresource Integrity hash and vendored as a fallback.
 
 ## 7. What it would take to run this in production
 

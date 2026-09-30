@@ -9,6 +9,7 @@ import { generateDataset, oneHot, DATASET_TYPES } from './dataset.js';
 import { calculateLoss, calculateAccuracy, sampleBatchIndices } from './metrics.js';
 import { makeRng } from './rng.js';
 import { loadChartLib, createLossChart, drawDecisionBoundary, drawNetworkDiagram } from './charts.js';
+import { clampNeurons, MAX_NEURONS, MIN_NEURONS } from './controls.js';
 
 const $ = (id) => document.getElementById(id);
 const toMatrix = (rows) => Matrix.from(rows);
@@ -95,12 +96,13 @@ function renderHiddenLayers() {
 
     const neurons = document.createElement('input');
     neurons.type = 'number';
-    neurons.min = '1';
-    neurons.max = '32';
+    neurons.min = String(MIN_NEURONS);
+    neurons.max = String(MAX_NEURONS);
+    neurons.step = '1';
     neurons.value = String(layer.neurons);
     neurons.setAttribute('aria-label', `Neurons in hidden layer ${index + 1}`);
     neurons.addEventListener('change', () => {
-      const n = Math.max(1, Math.min(32, Number(neurons.value) || 1));
+      const n = clampNeurons(neurons.value);
       neurons.value = String(n);
       state.hiddenLayers[index].neurons = n;
       resetAll();
