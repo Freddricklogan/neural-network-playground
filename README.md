@@ -154,7 +154,7 @@ npm run serve          # then open the printed URL
 **Verification — these are the numbers this repository actually produced:**
 
 ```bash
-npm test        # Test Files 6 passed (6) · Tests 81 passed (81)
+npm test        # Test Files 8 passed (8) · Tests 93 passed (93)
 npm run coverage # All files 100% statements
 npm run lint     # eslint . — clean
 npm run validate # html-validate index.html — clean
@@ -162,7 +162,7 @@ npm run validate # html-validate index.html — clean
 
 | Check | Result |
 | --- | --- |
-| Unit tests | **81 passed / 81** across 6 files |
+| Unit tests | **93 passed / 93** across 8 files |
 | Statement coverage (engine) | **100%** |
 | ESLint | clean |
 | html-validate | clean |
